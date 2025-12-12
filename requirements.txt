@@ -1,32 +1,8 @@
-# --- Core ---
-python-dotenv==1.0.1
-
-# --- PDF Processing ---
+PySide6==6.7.1
 PyPDF2==3.0.1
 pdf2image==1.17.0
-
-# --- OCR ---
-pytesseract==0.3.10
-
-# --- Image processing ---
 Pillow==10.2.0
-
-# --- Barcode Reading ---
+pytesseract==0.3.10
 pyzbar==0.1.9
-
-# --- API / Web Backend ---
-Flask==3.0.2
-Flask-Cors==4.0.0
-
-# --- Background Jobs (optional) ---
-celery==5.3.6
-redis==5.0.1
-
-# --- Logging & Utils ---
+python-dotenv==1.0.1
 loguru==0.7.2
-
-# --- Optional: MongoDB (si decides usarlo) ---
-pymongo==4.6.1
-
-# --- Optional: SQL (si usas SQL) ---
-SQLAlchemy==2.0.29
