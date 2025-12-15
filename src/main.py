@@ -55,7 +55,7 @@ def main():
             safe_code = sanitize_filename(code)
             counters[safe_code] += 1
             suffix = f"_{counters[safe_code]}" if counters[safe_code] > 1 else ""
-            filename = f"factura_{safe_code}{suffix}.pdf"
+            filename = f"fa_{safe_code}{suffix}.pdf"
 
             save_pdf(imgs, OUTPUT_DIR / filename)
 
