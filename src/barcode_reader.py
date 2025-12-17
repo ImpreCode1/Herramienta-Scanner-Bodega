@@ -7,7 +7,7 @@ VALID_TYPES = {"CODE128", "CODE39"}
 def is_valid_invoice_code(text: str) -> bool:
     return (
         text.isdigit() and
-        8 <= len(text) <= 12
+        10 <= len(text) <= 12
     )
 
 def read_barcode(image: Image.Image) -> str | None:

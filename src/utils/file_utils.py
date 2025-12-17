@@ -7,9 +7,11 @@ def sanitize_filename(text: str) -> str:
     text = re.sub(r"[^\w\-\.]", "_", text)
     return text
 
-def save_pdf(images, output_path: Path):
-    if not images:
+def save_pdf(images_with_meta, output_path: Path):
+    if not images_with_meta:
         return
+    
+    images = [img for _, img in images_with_meta]
 
     images[0].save(
         output_path,

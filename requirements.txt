@@ -7,3 +7,5 @@ loguru
 tqdm
 pytesseract
 PySide6
+numpy
+opencv-python
