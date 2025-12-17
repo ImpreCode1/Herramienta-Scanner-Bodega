@@ -1,13 +1,25 @@
 import sys
+import re
 from pathlib import Path
 from collections import defaultdict
 from logger import logger
 from image_converter import pdf_to_images
 from pdf_processor import split_by_barcode
-from utils.file_utils import save_pdf, sanitize_filename
+from utils.file_utils import save_pdf
 
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
+
+
+def safe_filename(text: str) -> str:
+    """
+    Limpia un texto para que sea seguro como nombre de archivo en Windows.
+    """
+    text = text.strip()
+    text = re.sub(r"[<>:\"/\\|?*\n\r\t]", "_", text)
+    text = re.sub(r"\s+", "_", text)
+    return text[:150]  # límite defensivo
+
 
 def main():
     if len(sys.argv) < 2:
@@ -20,7 +32,6 @@ def main():
     global_report = {
         "total_pdfs": 0,
         "total_pages": 0,
-        "total_documents": 0,
         "documents_with_code": 0,
         "documents_without_code": 0,
         "errors": []
@@ -31,29 +42,23 @@ def main():
 
         if not path.exists():
             logger.error(f"No existe: {pdf_path}")
+            global_report["errors"].append(pdf_path)
             continue
 
         logger.info(f"Procesando PDF: {pdf_path}")
         global_report["total_pdfs"] += 1
 
-        report = {
-            "total_pages": 0,
-            "total_documents": 0,
-            "documents_with_code": 0,
-            "documents_without_code": 0,
-            "errors": []
-        }
-
         images = pdf_to_images(str(path))
-        documents = split_by_barcode(images, report)
+        documents, report = split_by_barcode(images)
 
         global_report["total_pages"] += report["total_pages"]
         global_report["documents_with_code"] += report["documents_with_code"]
         global_report["documents_without_code"] += report["documents_without_code"]
 
         for code, imgs in documents.items():
-            safe_code = sanitize_filename(code)
+            safe_code = safe_filename(code)
             counters[safe_code] += 1
+
             suffix = f"_{counters[safe_code]}" if counters[safe_code] > 1 else ""
             filename = f"fa_{safe_code}{suffix}.pdf"
 
@@ -69,6 +74,7 @@ def main():
     print("============================\n")
 
     logger.info("Procesamiento múltiple finalizado.")
+
 
 if __name__ == "__main__":
     main()

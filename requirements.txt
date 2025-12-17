@@ -5,3 +5,4 @@ pyzbar
 python-dotenv
 loguru
 tqdm
+pytesseract
