@@ -6,3 +6,4 @@ python-dotenv
 loguru
 tqdm
 pytesseract
+PySide6
