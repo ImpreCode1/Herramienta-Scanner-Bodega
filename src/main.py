@@ -60,7 +60,7 @@ def main():
             counters[safe_code] += 1
 
             suffix = f"_{counters[safe_code]}" if counters[safe_code] > 1 else ""
-            filename = f"fa_{safe_code}{suffix}.pdf"
+            filename = f"{safe_code}{suffix}.pdf"
 
             save_pdf(imgs, OUTPUT_DIR / filename)
 
