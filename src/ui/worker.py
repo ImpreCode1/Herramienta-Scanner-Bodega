@@ -67,7 +67,6 @@ class ScannerWorker(QThread):
             # -------------------------------
             # FINAL
             # -------------------------------
-            self.log.emit(f"Facturas detectadas: {report['documents_with_code']}")
             self.log.emit(f"Facturas sin código: {report['documents_without_code']}")
 
             self.progress.emit(100)

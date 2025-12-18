@@ -3,6 +3,11 @@ from PySide6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QFileDialog, QProgressBar
 )
 from ui.worker import ScannerWorker
+from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt
+
+from pathlib import Path
+import sys
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -12,8 +17,31 @@ class MainWindow(QMainWindow):
         self.resize(800, 500)
 
         # ---- Widgets ----
-        title = QLabel("Herramienta de Scanner de Facturas")
-        title.setStyleSheet("font-size: 18px; font-weight: bold;")
+        title = QLabel("Scanner de Facturas")
+        title.setStyleSheet("font-size: 20px; font-weight: bold;")
+        
+        logo = QLabel()
+        pixmap = QPixmap(str(resource_path("src/assets/logo_impresistem.png")))
+        logo.setPixmap(pixmap.scaled(
+            120, 120,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
+        ))
+
+        subtitle = QLabel("Separación automática por códigos de barras")
+        subtitle.setStyleSheet("color: #475569; margin-bottom: 10px;")
+        
+        header_layout = QHBoxLayout()
+        header_layout.setSpacing(12)
+
+        header_layout.addWidget(logo)
+
+        text_layout = QVBoxLayout()
+        text_layout.addWidget(title)
+        text_layout.addWidget(subtitle)
+
+        header_layout.addLayout(text_layout)
+        header_layout.addStretch()
 
         self.btn_select = QPushButton("Seleccionar PDF")
         self.btn_select_output = QPushButton("Seleccionar carpeta de salida")
@@ -32,12 +60,58 @@ class MainWindow(QMainWindow):
         buttons_layout.addWidget(self.btn_select)
         buttons_layout.addWidget(self.btn_select_output)
         buttons_layout.addWidget(self.btn_process)
+        
+        self.btn_process.setStyleSheet("""
+            QPushButton {
+                background-color: #2563eb;
+                color: white;
+                font-weight: bold;
+                padding: 8px 16px;
+                border-radius: 6px;
+            }
+            QPushButton:disabled {
+                background-color: #94a3b8;
+            }
+        """)
+
+        self.btn_select.setStyleSheet("padding: 6px 12px;")
+        self.btn_select_output.setStyleSheet("padding: 6px 12px;")
+        
+        self.log_area.setStyleSheet("""
+            QTextEdit {
+                background-color: #0f172a;
+                color: #e5e7eb;
+                font-family: Consolas;
+                font-size: 11px;
+                border-radius: 6px;
+                padding: 8px;
+            }
+        """)
+        
+        self.progress.setStyleSheet("""
+            QProgressBar {
+                border: 1px solid #cbd5f5;
+                border-radius: 6px;
+                text-align: center;
+                height: 18px;
+            }
+            QProgressBar::chunk {
+                background-color: #2563eb;
+                border-radius: 6px;
+            }
+        """)
 
         main_layout = QVBoxLayout()
-        main_layout.addWidget(title)
+
+        main_layout.addLayout(header_layout)   # 👈 PRIMERO
         main_layout.addLayout(buttons_layout)
         main_layout.addWidget(self.log_area)
         main_layout.addWidget(self.progress)
+
+        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(16, 16, 16, 16)
+
+        buttons_layout.setSpacing(10)
 
         container = QWidget()
         container.setLayout(main_layout)
@@ -111,5 +185,7 @@ class MainWindow(QMainWindow):
                 self.btn_process.setEnabled(True)
                 
 
-
-
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return Path(sys._MEIPASS) / relative_path
+    return Path(relative_path)

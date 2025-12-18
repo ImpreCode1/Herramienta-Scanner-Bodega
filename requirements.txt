@@ -9,3 +9,4 @@ pytesseract
 PySide6
 numpy
 opencv-python
+pyqtdarktheme

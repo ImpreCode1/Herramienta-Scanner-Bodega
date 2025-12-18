@@ -68,7 +68,6 @@ def main():
     print("\n====== REPORTE GLOBAL ======")
     print(f"PDFs procesados: {global_report['total_pdfs']}")
     print(f"Páginas procesadas: {global_report['total_pages']}")
-    print(f"Facturas detectadas: {global_report['documents_with_code']}")
     print(f"Facturas sin código: {global_report['documents_without_code']}")
     print(f"Errores: {len(global_report['errors'])}")
     print("============================\n")
