@@ -1,7 +1,6 @@
 PyPDF2
 pdf2image
 Pillow
-pyzbar
 python-dotenv
 loguru
 tqdm
@@ -11,3 +10,4 @@ numpy
 opencv-python
 pyqtdarktheme
 pyinstaller
+pikepdf
