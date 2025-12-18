@@ -49,4 +49,3 @@ Thumbs.db
 # =========================
 build/
 dist/
-*.spec
