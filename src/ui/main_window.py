@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QPushButton,
     QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QFileDialog, QProgressBar
+    QVBoxLayout, QHBoxLayout, QTextEdit, QLabel, QFileDialog, QProgressBar
 )
 from ui.worker import ScannerWorker
 from PySide6.QtGui import QPixmap
@@ -45,6 +46,7 @@ class MainWindow(QMainWindow):
 
         self.btn_select = QPushButton("Seleccionar PDF")
         self.btn_select_output = QPushButton("Seleccionar carpeta de salida")
+        self.btn_select_output = QPushButton("Seleccionar carpeta de salida")
         self.btn_process = QPushButton("Procesar")
         self.btn_process.setEnabled(False)
 
@@ -54,10 +56,15 @@ class MainWindow(QMainWindow):
         self.progress.setValue(0)
         self.progress.setVisible(False)
         
+        self.progress = QProgressBar()
+        self.progress.setValue(0)
+        self.progress.setVisible(False)
+        
 
         # ---- Layouts ----
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(self.btn_select)
+        buttons_layout.addWidget(self.btn_select_output)
         buttons_layout.addWidget(self.btn_select_output)
         buttons_layout.addWidget(self.btn_process)
         
@@ -125,6 +132,11 @@ class MainWindow(QMainWindow):
         self.btn_select_output.clicked.connect(self.select_output_dir)
         
         
+        self.output_dir = None
+        
+        self.btn_select_output.clicked.connect(self.select_output_dir)
+        
+        
 
 
 
@@ -143,11 +155,17 @@ class MainWindow(QMainWindow):
             if self.output_dir:
                 self.btn_process.setEnabled(True)
 
+
+            if self.output_dir:
+                self.btn_process.setEnabled(True)
+
             
     def process_pdf(self):
         if not self.selected_pdf or not self.output_dir:
+        if not self.selected_pdf or not self.output_dir:
             return
 
+        # UI se prepara
         # UI se prepara
         self.btn_process.setEnabled(False)
         self.progress.setVisible(True)
@@ -155,14 +173,23 @@ class MainWindow(QMainWindow):
 
         # Crear worker
         self.worker = ScannerWorker(self.selected_pdf, self.output_dir)
+        self.progress.setVisible(True)
+        self.progress.setValue(0)
+
+        # Crear worker
+        self.worker = ScannerWorker(self.selected_pdf, self.output_dir)
 
         # 🔗 CONEXIONES (AQUÍ VA LA LÍNEA)
+        # 🔗 CONEXIONES (AQUÍ VA LA LÍNEA)
         self.worker.log.connect(self.log_area.append)
+        self.worker.progress.connect(self.progress.setValue)
         self.worker.progress.connect(self.progress.setValue)
         self.worker.finished.connect(self.on_finished)
 
         # Arrancar
+        # Arrancar
         self.worker.start()
+
 
     def on_finished(self):
         self.log_area.append("Proceso terminado.")

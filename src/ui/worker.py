@@ -12,15 +12,31 @@ def safe_filename(text: str) -> str:
         text = re.sub(r"[<>:\"/\\|?*\n\r\t]", "_", text)
         text = re.sub(r"\s+", "_", text)
         return text[:150]
+from image_converter import pdf_to_images
+from pdf_processor import split_by_barcode
+from pathlib import Path
+from collections import defaultdict
+import re
+
+from utils.file_utils import save_pdf
+
+def safe_filename(text: str) -> str:
+        text = text.strip()
+        text = re.sub(r"[<>:\"/\\|?*\n\r\t]", "_", text)
+        text = re.sub(r"\s+", "_", text)
+        return text[:150]
 
 class ScannerWorker(QThread):
     log = Signal(str)
     progress = Signal(int)
+    progress = Signal(int)
     finished = Signal()
 
     def __init__(self, pdf_path, output_dir):
+    def __init__(self, pdf_path, output_dir):
         super().__init__()
         self.pdf_path = pdf_path
+        self.output_dir = Path(output_dir)
         self.output_dir = Path(output_dir)
 
     def run(self):
@@ -71,6 +87,9 @@ class ScannerWorker(QThread):
 
             self.progress.emit(100)
             self.log.emit("Procesamiento finalizado ✔️")
+
+        except Exception as e:
+            self.log.emit(f"❌ Error: {e}")
 
         except Exception as e:
             self.log.emit(f"❌ Error: {e}")
