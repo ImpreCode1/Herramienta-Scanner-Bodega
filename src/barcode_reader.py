@@ -1,14 +1,50 @@
-from pyzbar.pyzbar import decode
+import os
+import sys
+from pathlib import Path
 from PIL import Image
 from loguru import logger
 
+
+# ==================================================
+# Configuración ZBAR (CRÍTICO para PyInstaller)
+# ==================================================
+def setup_zbar():
+    """
+    Asegura que pyzbar pueda encontrar las DLLs de ZBar
+    cuando la app está empaquetada con PyInstaller.
+    """
+    if getattr(sys, "frozen", False):
+        base_dir = Path(sys.executable).parent
+        zbar_dir = base_dir / "runtime" / "zbar" / "bin"
+
+        if zbar_dir.exists():
+            os.environ["PATH"] = (
+                str(zbar_dir)
+                + os.pathsep
+                + os.environ.get("PATH", "")
+            )
+        else:
+            logger.error(f"Directorio ZBar no encontrado: {zbar_dir}")
+
+
+# ⚠️ DEBE ejecutarse ANTES del import pyzbar
+setup_zbar()
+
+from pyzbar.pyzbar import decode
+
+
+# ==================================================
+# Lógica de negocio
+# ==================================================
 VALID_TYPES = {"CODE128", "CODE39"}
+
 
 def is_valid_invoice_code(text: str) -> bool:
     return (
         text.isdigit() and
         10 <= len(text) <= 12
     )
+
 
 def read_barcode(image: Image.Image) -> str | None:
     width, height = image.size
