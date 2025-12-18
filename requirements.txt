@@ -10,3 +10,4 @@ PySide6
 numpy
 opencv-python
 pyqtdarktheme
+pyinstaller
