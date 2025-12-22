@@ -1,23 +1,18 @@
 import sys
-import subprocess
 
-# ==================================================
-# OCULTAR CONSOLAS DE SUBPROCESOS (Windows)
-# ==================================================
-if sys.platform == "win32":
-    subprocess.CREATE_NO_WINDOW = 0x08000000
-
-
+# Fase 2: Importar TODO
 from PySide6.QtWidgets import QApplication
 from ui.main_window import MainWindow
+
+# Fase 3: Ahora sí, ocultar consolas
+from utils.runtime import hide_subprocess_consoles
+hide_subprocess_consoles()
 
 
 def main():
     app = QApplication(sys.argv)
-
     window = MainWindow()
     window.show()
-
     sys.exit(app.exec())
 
 

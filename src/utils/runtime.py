@@ -32,24 +32,37 @@ def poppler_bin() -> Path:
 
 
 # ==================================================
-# ZBAR (CRÍTICO)
+# OCULTAR CONSOLAS DE SUBPROCESOS (Windows)
 # ==================================================
-def zbar_bin() -> Path:
-    return runtime_path("runtime/zbar/bin")
-
-
-def setup_zbar_path():
+def hide_subprocess_consoles():
     """
-    Inyecta ZBar en el PATH para que pyzbar + ctypes
-    puedan encontrar libzbar y libiconv.
+    Configura subprocess para que no muestre ventanas de consola
+    en Windows cuando se ejecuten comandos externos como tesseract o poppler.
+    
+    IMPORTANTE: Debe llamarse DESPUÉS de todas las importaciones principales
+    para evitar conflictos con asyncio en Python 3.13+
     """
-    zbar_path = zbar_bin()
-
-    if zbar_path.exists():
-        os.environ["PATH"] = (
-            str(zbar_path)
-            + os.pathsep
-            + os.environ.get("PATH", "")
-        )
-    else:
-        print(f"[WARN] ZBar no encontrado en {zbar_path}")
+    if sys.platform == 'win32':
+        import subprocess
+        
+        # Verificar que no hayamos hecho esto ya
+        if hasattr(subprocess.run, '_no_window_wrapped'):
+            return
+        
+        _original_run = subprocess.run
+        _original_popen = subprocess.Popen
+        
+        def _run_no_window(*args, **kwargs):
+            kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
+            return _original_run(*args, **kwargs)
+        
+        def _popen_no_window(*args, **kwargs):
+            kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
+            return _original_popen(*args, **kwargs)
+        
+        # Marcar como wrapped para evitar doble wrapping
+        _run_no_window._no_window_wrapped = True
+        _popen_no_window._no_window_wrapped = True
+        
+        subprocess.run = _run_no_window
+        subprocess.Popen = _popen_no_window
