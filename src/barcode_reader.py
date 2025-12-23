@@ -5,7 +5,7 @@ from loguru import logger
 from typing import Any, Tuple, cast
 
 VALID_MIN_LEN = 10
-VALID_MAX_LEN = 12
+VALID_MAX_LEN = 13
 
 
 def is_valid_invoice_code(text: str) -> bool:

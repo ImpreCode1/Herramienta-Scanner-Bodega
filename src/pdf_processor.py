@@ -6,7 +6,7 @@ import pytesseract
 from pytesseract import image_to_string
 
 from barcode_reader import read_barcode
-from invoice_text_parser import extract_invoice_number_from_text
+from invoice_text_parser import extract_invoice_number_from_text, extract_ref_int_from_text
 from utils.image_preprocessor import preprocess_for_ocr
 from utils.runtime import tesseract_cmd
 
@@ -68,27 +68,52 @@ def split_by_barcode(images):
                 try:
                     width, height = image.size
 
-                    bottom_crop = image.crop((
+                    # =========================
+                    # 2️⃣ OCR PARTE SUPERIOR → Ref.Int.
+                    # =========================
+                    top_crop = image.crop((
                         0,
-                        int(height * 0.65),
+                        0,
                         width,
-                        height
+                        int(height * 0.35)
                     ))
 
-                    processed = preprocess_for_ocr(bottom_crop)
+                    processed_top = preprocess_for_ocr(top_crop)
 
-                    text = image_to_string(
-                        processed,
+                    text_top = image_to_string(
+                        processed_top,
                         lang="eng",
                         config="--psm 6"
                     )
 
-                    page_number = extract_page_number(text)
-                    detected_code = extract_invoice_number_from_text(text)
+                    detected_code = extract_ref_int_from_text(text_top)
+
+                    # =========================
+                    # 3️⃣ OCR PARTE INFERIOR → No. Fac.
+                    # =========================
+                    if not detected_code:
+                        bottom_crop = image.crop((
+                            0,
+                            int(height * 0.65),
+                            width,
+                            height
+                        ))
+
+                        processed_bottom = preprocess_for_ocr(bottom_crop)
+
+                        text_bottom = image_to_string(
+                            processed_bottom,
+                            lang="eng",
+                            config="--psm 6"
+                        )
+
+                        page_number = extract_page_number(text_bottom)
+                        detected_code = extract_invoice_number_from_text(text_bottom)
 
                 except Exception as e:
                     logger.error(f"OCR falló en página {idx}: {e}")
                     detected_code = None
+
 
             # 3️⃣ Resolver documento actual
             if detected_code:
