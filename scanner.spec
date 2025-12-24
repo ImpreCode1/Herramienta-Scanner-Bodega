@@ -8,6 +8,7 @@ a = Analysis(
     binaries=[
         ('runtime/tesseract/tesseract.exe', 'runtime/tesseract'),
         ('runtime/poppler/Library/bin', 'runtime/poppler/Library/bin'),
+        ('runtime/zbar/bin/*', 'runtime/zbar/bin')
     ],
     datas=[
         ('runtime/tesseract/tessdata', 'runtime/tesseract/tessdata'),
