@@ -55,7 +55,7 @@ def crop_barcode_zone(image: Image.Image) -> Image.Image:
     box = (
         int(w * 0.25),
         int(h * 0.85),
-        int(w * 0.5),
+        int(w * 0.56),
         int(h * 0.93),
     )
     return image.crop(box).convert("RGB")
