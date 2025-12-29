@@ -99,6 +99,7 @@ def split_by_barcode(
 
     current_code = None
     last_page_number = None
+    previous_code = None
 
     for idx, image in enumerate(images, start=1):
         report["total_pages"] += 1
@@ -200,11 +201,18 @@ def split_by_barcode(
             # 3️⃣ Asignación final
             # =========================
             if detected_code:
-                current_code = str(detected_code).strip()
+                detected_code = str(detected_code).strip()
+
+                # 🔁 Nueva factura → reiniciar numeración
+                if detected_code != previous_code:
+                    last_page_number = None
+                    logger.info(
+                        f"[PAGE] Nueva factura detectada ({detected_code})"
+                    )
+
+                current_code = detected_code
+                previous_code = detected_code
                 report["documents_with_code"] += 1
-                logger.success(
-                    f"✅ Página {idx}: Documento asignado a -> {current_code}"
-                )
             else:
                 if not current_code:
                     current_code = "SIN_CODIGO"
